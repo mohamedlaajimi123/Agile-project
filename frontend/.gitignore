@@ -56,3 +56,25 @@ pnpm-debug.log*
 # OS Files
 .DS_Store
 thumbs.db
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production Build
+dist/
+build/
+
+# Editor/System Files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
