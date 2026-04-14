@@ -1,140 +1,134 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings } from 'lucide-react';
-
-// Import Data (Keeping your originals)
-import { LABELS } from '../data/professorData';
-
-// Import Hooks and API (Needed to make the data show up)
+// BACKEND NOTE: These imports provide the mock data for UI testing.
+import { LABELS, INVIGILATION_SCHEDULE } from '../data/professorData';
 import { useFetch } from '../hooks/useFetch';
 import { professorService } from '../api/mockApi';
 
-// Import Components
+// Internal Components
 import ProfessorProfile from '../components/professor/ProfessorProfile';
 import ProfessorSidebar from '../components/professor/ProfessorSidebar';
 import ProfessorTopBar from '../components/professor/ProfessorTopBar';
+import ProfessorSettings from '../components/professor/ProfessorSettings';
 import DashboardView from '../components/professor/views/DashboardView';
 import GradesView from '../components/professor/views/GradesView';
 
+// Custom Hook
+import { useProfessorActions } from '../hooks/useProfessorActions';
+
 export default function ProfessorPortal() {
+  // UI State
   const [isDark, setIsDark] = useState(true);
   const [language, setLanguage] = useState('EN');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentPage, setCurrentPage] = useState('portal'); 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [notificationCount] = useState(3);
   const [selectedGradesCourse, setSelectedGradesCourse] = useState(null);
-  const [courseStudents, setCourseStudents] = useState({});
-  const [isAutoFilling, setIsAutoFilling] = useState(false);
-
-  // --- DATA FETCHING ---
-  // Fetching the classes and schedule from the API we built
-  const { data: profData } = useFetch(professorService.getProfile);
-  const { data: classesData } = useFetch(professorService.getClasses);
-  const { data: scheduleData } = useFetch(professorService.getInvigilation);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const t = LABELS[language];
-  
-  // Use fetched data if available, otherwise fallback to empty array
-  const COURSES = classesData || [];
-  const INVIGILATION_SCHEDULE = scheduleData || [];
 
-  const filteredCourses = COURSES.filter(course => 
-    course.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    course.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  
-  const totalStudents = COURSES.reduce((acc, course) => acc + (course.studentCount || 0), 0);
+  // BACKEND NOTE: useFetch is a wrapper for API calls. 
+  // Your teammate should check these service methods to point to the real production URLs.
+  const { data: profData } = useFetch(professorService.getProfile);
+  const { data: classesData } = useFetch(professorService.getClasses);
 
-  // Initialize course students
-  const initializeStudents = async (courseId) => {
-    if (!courseStudents[courseId]) {
-      const roster = await professorService.getClassRoster(courseId);
-      if (roster) setCourseStudents(prev => ({ ...prev, [courseId]: roster }));
-    }
-  };
+  // Logic from our new hook
+  const { 
+    courseStudents, 
+    initializeStudents, 
+    updateStudentGrade, 
+    handleAutoFillGrades, 
+    isAutoFilling 
+  } = useProfessorActions();
 
-  const updateStudentGrade = async (courseId, studentId, newGrade) => {
-    setCourseStudents(prev => ({
-      ...prev, [courseId]: prev[courseId].map(student => student.id === studentId ? { ...student, grade: newGrade } : student)
-    }));
-    await professorService.updateGrade(courseId, studentId, newGrade);
-  };
-
-  const handleAutoFillGrades = (courseId) => {
-    setIsAutoFilling(true);
-    setTimeout(() => {
-      setCourseStudents(prev => ({
-        ...prev, [courseId]: prev[courseId].map(student => student.grade === '' || student.grade === null ? { ...student, grade: Math.floor(Math.random() * 11) + 10, aiGenerated: true } : student)
-      }));
-      setIsAutoFilling(false);
-    }, 2000);
-  };
-
-  if (currentPage === 'profile') {
-    return <ProfessorProfile isDark={isDark} t={t} setCurrentPage={setCurrentPage} />;
-  }
+  // Settings/Profile full-page logic
+  const isFullPageView = currentPage === 'profile' || currentPage === 'settings';
 
   return (
-    <div className={`min-h-screen overflow-hidden transition-colors duration-500 ${isDark ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white' : 'bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900'}`}>
-      {isDark && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <motion.div animate={{ x: [0, 100, 0], y: [0, 50, 0] }} transition={{ duration: 20, repeat: Infinity }} className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl opacity-30" />
-          <motion.div animate={{ x: [0, -100, 0], y: [0, -50, 0] }} transition={{ duration: 25, repeat: Infinity }} className="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl opacity-30" />
-        </div>
+    <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'bg-slate-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
+      
+      {/* Background Orbs */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-30 ${isDark ? 'bg-indigo-500/10' : 'bg-indigo-500/5'}`} />
+        <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-30 ${isDark ? 'bg-violet-500/10' : 'bg-violet-500/5'}`} />
+      </div>
+
+      {/* Sidebar - Hidden in full page views */}
+      {!isFullPageView && (
+        <ProfessorSidebar 
+          isDark={isDark} setIsDark={setIsDark} 
+          language={language} setLanguage={setLanguage} 
+          activeTab={activeTab} setActiveTab={setActiveTab} 
+          t={t} setCurrentPage={setCurrentPage}
+          setSelectedGradesCourse={setSelectedGradesCourse}
+        />
       )}
 
-      {/* Sidebar */}
-      <ProfessorSidebar isDark={isDark} setIsDark={setIsDark} language={language} setLanguage={setLanguage} activeTab={activeTab} setActiveTab={setActiveTab} setCurrentPage={setCurrentPage} t={t} setSelectedGradesCourse={setSelectedGradesCourse} />
+      <main className={`relative z-10 transition-all duration-300 min-h-screen ${isFullPageView ? 'ml-0' : 'ml-64 p-8'}`}>
+        
+        {!isFullPageView && (
+          <ProfessorTopBar 
+            isDark={isDark} t={t} 
+            searchQuery={searchQuery} setSearchQuery={setSearchQuery} 
+          />
+        )}
 
-      <main className="ml-64 relative z-10 p-8 min-h-screen">
-        {/* Top Bar */}
-        <ProfessorTopBar isDark={isDark} t={t} searchQuery={searchQuery} setSearchQuery={setSearchQuery} notificationCount={notificationCount} />
+        <div className={!isFullPageView ? 'mt-4' : ''}>
+          <AnimatePresence mode="wait">
+            
+            {/* Full Page Overlay: Profile */}
+            {currentPage === 'profile' && (
+              <ProfessorProfile key="profile" isDark={isDark} t={t} setCurrentPage={setCurrentPage} />
+            )}
 
-        <AnimatePresence mode="wait">
-          {activeTab === 'dashboard' && (
-            <DashboardView 
-              isDark={isDark} 
-              t={t} 
-              setActiveTab={setActiveTab} 
-              setSelectedGradesCourse={setSelectedGradesCourse} 
-              totalStudents={totalStudents} 
-              filteredCourses={filteredCourses}
-              PROF_DATA={profData}
-              INVIGILATION_SCHEDULE={INVIGILATION_SCHEDULE} 
-            />
-          )}
+            {/* Full Page Overlay: Settings */}
+            {currentPage === 'settings' && (
+              <ProfessorSettings key="settings" isDark={isDark} t={t} setCurrentPage={setCurrentPage} />
+            )}
 
-          {activeTab === 'courses' && (
-            <motion.div key="courses" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
-              <h2 className="text-2xl font-bold">{t.courses}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {COURSES.map((course) => (
-                  <motion.div key={course.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} whileHover={{ y: -4 }} className={`rounded-2xl backdrop-blur-xl border p-6 transition-all duration-300 ${isDark ? `bg-gradient-to-br ${course.color} border-white/10 hover:border-white/30` : `bg-gradient-to-br ${course.color.replace('/20', '/30')} border-slate-300/50 shadow-lg`}`}>
-                    <p className={`text-xs font-semibold uppercase ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>{course.id}</p>
-                    <h3 className="text-lg font-bold mt-2">{course.name}</h3>
-                    <div className="mt-4 inline-block px-3 py-1 rounded-full bg-orange-500/30 text-orange-300 text-xs font-semibold">{t.pending}</div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
+            {/* Main Portal Content */}
+            {currentPage === 'portal' && (
+              <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                
+                {activeTab === 'dashboard' && (
+                  <DashboardView 
+                    isDark={isDark} t={t} 
+                    setActiveTab={setActiveTab} 
+                    setSelectedGradesCourse={setSelectedGradesCourse}
+                    PROF_DATA={profData}
+                    filteredCourses={classesData || []} 
+                    INVIGILATION_SCHEDULE={INVIGILATION_SCHEDULE}
+                  />
+                )}
+                
+                {activeTab === 'grades' && (
+                  <GradesView 
+                    isDark={isDark} t={t} 
+                    COURSES={classesData || []}
+                    selectedGradesCourse={selectedGradesCourse}
+                    setSelectedGradesCourse={setSelectedGradesCourse}
+                    courseStudents={courseStudents} 
+                    initializeStudents={initializeStudents}
+                    updateStudentGrade={updateStudentGrade}
+                    handleAutoFillGrades={handleAutoFillGrades}
+                    isAutoFilling={isAutoFilling}
+                  />
+                )}
 
-          {activeTab === 'grades' && (
-            <GradesView isDark={isDark} t={t} COURSES={COURSES} selectedGradesCourse={selectedGradesCourse} setSelectedGradesCourse={setSelectedGradesCourse} initializeStudents={initializeStudents} courseStudents={courseStudents} updateStudentGrade={updateStudentGrade} handleAutoFillGrades={handleAutoFillGrades} isAutoFilling={isAutoFilling} />
-          )}
+                {/* BACKEND NOTE: This uses the GradesView component but with 'viewOnly' 
+                    so the teammate doesn't have to build a whole new Course management API yet. */}
+                {activeTab === 'courses' && (
+                  <GradesView 
+                    isDark={isDark} t={t} 
+                    COURSES={classesData || []}
+                    viewOnly={true} 
+                  />
+                )}
 
-          {activeTab === 'settings' && (
-            <motion.div key="settings" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="space-y-6">
-              <h2 className="text-2xl font-bold">{t.settings}</h2>
-              <div className={`rounded-2xl backdrop-blur-xl border p-8 text-center ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 border-slate-300/50 shadow-lg'}`}>
-                <Settings className="w-16 h-16 mx-auto mb-4 text-violet-400" />
-                <h3 className="text-2xl font-bold mb-2">Settings Coming Soon</h3>
-                <p className={isDark ? 'text-gray-400' : 'text-slate-600'}>Customize your preferences and account settings here.</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );
