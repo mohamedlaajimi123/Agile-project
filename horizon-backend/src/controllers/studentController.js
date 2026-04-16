@@ -34,3 +34,20 @@ exports.getStudents = async (req, res, next) => {
     next(err);
   }
 };
+exports.getMyProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await require("../config/db").query(
+      `SELECT s.*, u.full_name, u.email
+       FROM students s
+       JOIN users u ON s.user_id = u.user_id
+       WHERE s.user_id = $1`,
+      [userId]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
