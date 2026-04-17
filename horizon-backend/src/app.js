@@ -12,7 +12,13 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Swagger (before routes or after, but before error handler is best)
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs, {
+  customSiteTitle: "Horizon API Docs",
+  swaggerOptions: {
+    docExpansion: "none", // cleaner UI
+    persistAuthorization: true, // keeps token
+  },
+}));
 
 // ✅ API routes
 app.use("/api", routes);

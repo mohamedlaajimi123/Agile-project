@@ -1,12 +1,32 @@
 const router = require("express").Router();
 const studentController = require("../controllers/studentController");
-const auth = require("../middlewares/authMiddleware");
-const role = require("../middlewares/roleMiddleware");
-// 🔒 Protected routes
-router.post("/", auth, role(["admin"]), studentController.createStudent);router.get("/", auth, studentController.getStudents);
-router.get("/me", auth, role(["student"]), studentController.getMyProfile);
+const { protect, authorize } = require("../middlewares/authMiddleware");
+
+/**
+ * @swagger
+ * /students:
+ *   get:
+ *     summary: Get all students
+ *     tags: [Students]
+ */
+router.get("/", protect, authorize("admin"), studentController.getStudents);
+
+/**
+ * @swagger
+ * /students:
+ *   post:
+ *     summary: Create a student
+ *     tags: [Students]
+ */
+router.post("/", protect, authorize("admin"), studentController.createStudent);
+
+/**
+ * @swagger
+ * /students/me:
+ *   get:
+ *     summary: Get current student profile
+ *     tags: [Students]
+ */
+router.get("/me", protect, studentController.getMyProfile);
+
 module.exports = router;
-
-
-
-

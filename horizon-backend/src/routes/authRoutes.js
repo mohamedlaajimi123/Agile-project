@@ -1,18 +1,21 @@
 const router = require("express").Router();
 const authController = require("../controllers/authController");
-const auth = require("../middlewares/authMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
+
 /**
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login user
+ *     summary: Authenticate user and return JWT token
  *     tags: [Auth]
+ *     description: Login using email and password to receive a JWT token.
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required: [email, password]
  *             properties:
  *               email:
  *                 type: string
@@ -22,10 +25,13 @@ const auth = require("../middlewares/authMiddleware");
  *                 example: 123456
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Successful authentication
  *       401:
  *         description: Invalid credentials
  */
 router.post("/login", authController.login);
-router.get("/me", auth, authController.getMe);
-module.exports = router; // 🔥 VERY IMPORTANT
+
+// ✅ FIXED LINE
+router.get("/me", protect, authController.getMe);
+
+module.exports = router;

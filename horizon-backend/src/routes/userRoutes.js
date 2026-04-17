@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controllers/userController");
-const auth = require("../middlewares/authMiddleware");
+const { protect } = require("../middlewares/authMiddleware");
 
-router.post("/", userController.createUser);
-router.get("/", auth, userController.getUsers);
+router.get("/", protect, userController.getUsers);
 
-module.exports = router; // 🔥 MUST EXIST
+module.exports = router;

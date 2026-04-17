@@ -1,8 +1,19 @@
 const router = require("express").Router();
 const adminController = require("../controllers/adminController");
-const auth = require("../middlewares/authMiddleware");
-const role = require("../middlewares/roleMiddleware");
+const { protect, authorize } = require("../middlewares/authMiddleware");
 
-router.get("/dashboard", auth, role(["admin"]), adminController.getDashboard);
+/**
+ * @swagger
+ * /admin/dashboard:
+ *   get:
+ *     summary: Get admin dashboard stats
+ *     tags: [Admin]
+ */
+router.get(
+  "/dashboard",
+  protect,
+  authorize("admin"),
+  adminController.getDashboard
+);
 
 module.exports = router;

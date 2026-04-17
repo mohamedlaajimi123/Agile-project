@@ -1,8 +1,19 @@
 const router = require("express").Router();
 const professorController = require("../controllers/professorController");
-const auth = require("../middlewares/authMiddleware");
-const role = require("../middlewares/roleMiddleware");
+const { protect, authorize } = require("../middlewares/authMiddleware");
 
-router.get("/dashboard", auth, role(["professor"]), professorController.getDashboard);
+/**
+ * @swagger
+ * /professor/dashboard:
+ *   get:
+ *     summary: Get professor dashboard
+ *     tags: [Professor]
+ */
+router.get(
+  "/dashboard",
+  protect,
+  authorize("professor"),
+  professorController.getDashboard
+);
 
 module.exports = router;
