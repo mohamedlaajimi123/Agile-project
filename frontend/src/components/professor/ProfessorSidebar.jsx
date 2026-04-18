@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, BookOpen, BarChart3, RefreshCw } from 'lucide-react';
 import SharedSidebar from '../shared/SharedSidebar'; 
 import horizonLogo from '../../assets/horizon-logo.png';
 
@@ -9,6 +9,7 @@ export default function ProfessorSidebar({ isDark, setIsDark, language, setLangu
     { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard },
     { id: 'courses', label: t.courses, icon: BookOpen },
     { id: 'grades', label: t.grades, icon: BarChart3 },
+    { id: 'sync', label: t.sync, icon: RefreshCw },
   ];
 
   const handleTabChange = (viewId) => {

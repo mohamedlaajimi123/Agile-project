@@ -11,6 +11,7 @@ import HorizonLogin from './pages/Login/HorizonLogin';
 import StudentPortal from './pages/StudentPortal';
 import ProfessorPortal from './pages/ProfessorPortal';
 import AdminPortal from './pages/AdminPortal';
+import SuperAdminPortal from './pages/SuperAdminPortal';
 
 export default function App() {
   const { isAuthenticated, user } = useAuth();
@@ -25,6 +26,11 @@ export default function App() {
         <Route path="/student/*" element={<StudentPortal />} />
         <Route path="/professor/*" element={<ProfessorPortal />} />
         <Route path="/admin/*" element={<AdminPortal />} />
+        
+        {/* FIXED: Correct spelling and added leading slash */}
+        <Route path="/superadmin/*" element={<SuperAdminPortal />} />
+        
+        {/* FIXED: Fallback MUST be the very last route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
