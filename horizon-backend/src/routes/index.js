@@ -4,7 +4,6 @@ const classCourseRoutes = require("./classCourseRoutes");
 const classRoutes = require("./classRoutes");
 
 router.use("/courses", courseRoutes);
-router.use("/courses", courseRoutes);
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));
 router.use("/students", require("./studentRoutes"));
