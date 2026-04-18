@@ -11,4 +11,5 @@ router.use("/admin", require("./adminRoutes"));
 router.use("/professor", require("./professorRoutes"));
 router.use("/class-courses", classCourseRoutes);
 router.use("/classes", classRoutes);
+router.use("/student-classes", require("./studentClassRoutes"));
 module.exports = router;
