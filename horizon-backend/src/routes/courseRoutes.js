@@ -18,6 +18,22 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
  *     security:
  *       - bearerAuth: []
  */
+/**
+ * @swagger
+ * /courses:
+ *   get:
+ *     summary: Get all courses
+ *     tags: [Courses]
+ *     responses:
+ *       200:
+ *         description: List of courses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Course'
+ */
 router.get("/", protect, async (req, res, next) => {
   try {
     const result = await db.query("SELECT * FROM courses ORDER BY course_id");
