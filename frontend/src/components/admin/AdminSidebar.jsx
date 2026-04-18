@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, CalendarDays, GraduationCap, Users, FolderOpen } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, GraduationCap, Users, FolderOpen, BookOpen } from 'lucide-react';
 import SharedSidebar from '../shared/SharedSidebar';
 
 // 👇 IMPORT YOUR LOGO HERE. Adjust the path if your assets folder is somewhere else!
@@ -19,6 +19,7 @@ export default function AdminSidebar({
     { id: 'exam-planner', label: t?.examPlanner || 'Exam Planner', icon: CalendarDays },
     { id: 'grade-control', label: t?.gradeControl || 'Grade Control', icon: GraduationCap },
     { id: 'user-directory', label: t?.userDirectory || 'User Directory', icon: Users },
+    { id: 'class-list', label: t?.classGPA || 'Class GPA', icon: BookOpen },
     { id: 'documents', label: t?.documents || 'Documents', icon: FolderOpen }
   ];
 

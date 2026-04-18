@@ -86,4 +86,40 @@ router.get("/", protect, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /grades/class/{classId}:
+ *   get:
+ *     summary: Get grades for a specific class
+ *     tags: [Grades]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The class ID
+ *     responses:
+ *       200:
+ *         description: List of grades for the class
+ */
+router.get("/class/:classId", protect, authorize("admin"), async (req, res, next) => {
+  try {
+    const { classId } = req.params;
+
+    const result = await db.query(`
+      SELECT g.score
+      FROM grades g
+      JOIN exams e ON g.exam_id = e.exam_id
+      WHERE e.class_id = $1
+    `, [classId]);
+
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

@@ -11,6 +11,7 @@ import HorizonLogin from './pages/Login/HorizonLogin';
 import StudentPortal from './pages/StudentPortal';
 import ProfessorPortal from './pages/ProfessorPortal';
 import AdminPortal from './pages/AdminPortal';
+import SuperAdminPortal from './pages/SuperAdminPortal';
 
 export default function App() {
   const { isAuthenticated, user } = useAuth();
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/student/*" element={<StudentPortal />} />
         <Route path="/professor/*" element={<ProfessorPortal />} />
         <Route path="/admin/*" element={<AdminPortal />} />
+        <Route path="/superadmin/*" element={<SuperAdminPortal />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
@@ -76,6 +78,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminPortal />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/superadmin/*" 
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <SuperAdminPortal />
             </ProtectedRoute>
           } 
         />
