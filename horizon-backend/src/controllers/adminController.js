@@ -13,3 +13,33 @@ exports.getDashboard = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getSyncStatus = async (req, res, next) => {
+  try {
+    // Mock sync status - in real implementation, check actual sync state
+    res.json({
+      lastSync: new Date().toISOString(),
+      status: "completed",
+      recordsSynced: 150
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.triggerSync = async (req, res, next) => {
+  try {
+    // Mock sync operation - in real implementation, perform actual sync
+    // Simulate async operation
+    setTimeout(() => {
+      console.log("Admin data sync completed");
+    }, 2000);
+
+    res.json({
+      message: "Sync initiated successfully",
+      status: "in_progress"
+    });
+  } catch (err) {
+    next(err);
+  }
+};

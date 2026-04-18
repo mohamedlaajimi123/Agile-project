@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import { LayoutDashboard, CalendarDays, GraduationCap, Users, FolderOpen, BookOpen } from 'lucide-react';
+=======
+import { LayoutDashboard, CalendarDays, GraduationCap, Users, FolderOpen, RefreshCw } from 'lucide-react';
+>>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
 import SharedSidebar from '../shared/SharedSidebar';
 
 // 👇 IMPORT YOUR LOGO HERE. Adjust the path if your assets folder is somewhere else!
@@ -19,8 +23,13 @@ export default function AdminSidebar({
     { id: 'exam-planner', label: t?.examPlanner || 'Exam Planner', icon: CalendarDays },
     { id: 'grade-control', label: t?.gradeControl || 'Grade Control', icon: GraduationCap },
     { id: 'user-directory', label: t?.userDirectory || 'User Directory', icon: Users },
+<<<<<<< HEAD
     { id: 'class-list', label: t?.classGPA || 'Class GPA', icon: BookOpen },
     { id: 'documents', label: t?.documents || 'Documents', icon: FolderOpen }
+=======
+    { id: 'documents', label: t?.documents || 'Documents', icon: FolderOpen },
+    { id: 'sync', label: t?.sync || 'Data Sync', icon: RefreshCw }
+>>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
   ];
 
   // Define the mock profile data for the Admin

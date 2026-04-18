@@ -26,7 +26,15 @@ export default function App() {
         <Route path="/student/*" element={<StudentPortal />} />
         <Route path="/professor/*" element={<ProfessorPortal />} />
         <Route path="/admin/*" element={<AdminPortal />} />
+<<<<<<< HEAD
         <Route path="/superadmin/*" element={<SuperAdminPortal />} />
+=======
+        
+        {/* FIXED: Correct spelling and added leading slash */}
+        <Route path="/superadmin/*" element={<SuperAdminPortal />} />
+        
+        {/* FIXED: Fallback MUST be the very last route */}
+>>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

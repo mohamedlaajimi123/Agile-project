@@ -12,6 +12,7 @@ import ProfessorTopBar from '../components/professor/ProfessorTopBar';
 import ProfessorSettings from '../components/professor/ProfessorSettings';
 import DashboardView from '../components/professor/views/DashboardView';
 import GradesView from '../components/professor/views/GradesView';
+import ProfessorSyncView from '../components/professor/views/ProfessorSyncView';
 
 // Custom Hook
 import { useProfessorActions } from '../hooks/useProfessorActions';
@@ -20,7 +21,7 @@ export default function ProfessorPortal() {
   // UI State
   const [isDark, setIsDark] = useState(true);
   const [language, setLanguage] = useState('EN');
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('sync');
   const [currentPage, setCurrentPage] = useState('portal'); 
   const [selectedGradesCourse, setSelectedGradesCourse] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,6 +113,12 @@ export default function ProfessorPortal() {
                     updateStudentGrade={updateStudentGrade}
                     handleAutoFillGrades={handleAutoFillGrades}
                     isAutoFilling={isAutoFilling}
+                  />
+                )}
+
+                {activeTab === 'sync' && (
+                  <ProfessorSyncView
+                    isDark={isDark} t={t}
                   />
                 )}
 
