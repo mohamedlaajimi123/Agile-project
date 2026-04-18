@@ -1,29 +1,25 @@
-// src/app.js
-
 const express = require("express");
 const cors = require("cors");
+
 const routes = require("./routes");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const { swaggerUi, specs } = require("./docs/swagger");
 
 const app = express();
 
+// ✅ CORS (simple and safe)
 app.use(cors());
+
+// ✅ JSON
 app.use(express.json());
 
-// ✅ Swagger (before routes or after, but before error handler is best)
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs, {
-  customSiteTitle: "Horizon API Docs",
-  swaggerOptions: {
-    docExpansion: "none", // cleaner UI
-    persistAuthorization: true, // keeps token
-  },
-}));
-
-// ✅ API routes
+// ✅ Routes
 app.use("/api", routes);
 
-// ✅ Error handler (always LAST)
+// ✅ Swagger (ONLY ONCE)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+// ✅ Error handler
 app.use(errorMiddleware);
 
 module.exports = app;

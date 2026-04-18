@@ -1,32 +1,25 @@
 const jwt = require("jsonwebtoken");
 
-// 🔐 PROTECT ROUTES (authentication)
+// 🔐 Protect
 exports.protect = (req, res, next) => {
   try {
     let token;
 
-    // Check Authorization header
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
+    if (req.headers.authorization?.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    // No token
     if (!token) {
       return res.status(401).json({
         error: "Not authorized, token missing",
       });
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user to request
     req.user = decoded;
 
-    next();
+    return next(); // ✅ ALWAYS return next
   } catch (err) {
     return res.status(401).json({
       error: "Not authorized, invalid token",
@@ -34,23 +27,23 @@ exports.protect = (req, res, next) => {
   }
 };
 
-// 🔒 ROLE-BASED AUTHORIZATION
+// 🔒 Authorize
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    // Ensure user exists (protect must run first)
+    console.log("User role:", req.user?.role);
+
     if (!req.user) {
       return res.status(401).json({
-        error: "Not authorized",
+        error: "No user found",
       });
     }
 
-    // Check role
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
-        error: "Forbidden: insufficient permissions",
+        error: "Forbidden: not allowed",
       });
     }
 
-    next();
+    return next(); // 🔥 VERY IMPORTANT
   };
 };
