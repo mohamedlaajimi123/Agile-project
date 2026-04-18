@@ -2,6 +2,7 @@ const router = require("express").Router();
 const courseRoutes = require("./courseRoutes");
 const classCourseRoutes = require("./classCourseRoutes");
 const classRoutes = require("./classRoutes");
+router.use("/grades", require("./gradeRoutes"));
 router.use("/exams", require("./examRoutes"));
 router.use("/courses", courseRoutes);
 router.use("/auth", require("./authRoutes"));
