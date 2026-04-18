@@ -7,37 +7,17 @@ export default function StudentDashboardView({ isDark, t }) {
 
   // 🔌 Fetch real backend data
   useEffect(() => {
-    const loadStudent = async () => {
-      try {
-        const data = await fetchWithAuth("/students/me");
-        setStudent(data);
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      }
-    };
+  const loadDashboard = async () => {
+    try {
+      const data = await fetchWithAuth("/student/dashboard");
+      setStudent(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-    loadStudent();
-  }, []);
-
-  // ❌ Error state
-  if (error) {
-    return (
-      <div className="p-6 text-red-500">
-        Error: {error}
-      </div>
-    );
-  }
-
-  // ⏳ Loading state
-  if (!student) {
-    return (
-      <div className="p-6 text-gray-400">
-        Loading student data...
-      </div>
-    );
-  }
-
+  loadDashboard();
+}, []);
   // ✅ Real UI with backend data
   return (
     <div className="space-y-6 p-6">
