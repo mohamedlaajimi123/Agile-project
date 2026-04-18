@@ -1,5 +1,8 @@
 const router = require("express").Router();
 const courseRoutes = require("./courseRoutes");
+const classCourseRoutes = require("./classCourseRoutes");
+const classRoutes = require("./classRoutes");
+
 router.use("/courses", courseRoutes);
 router.use("/courses", courseRoutes);
 router.use("/auth", require("./authRoutes"));
@@ -7,4 +10,6 @@ router.use("/users", require("./userRoutes"));
 router.use("/students", require("./studentRoutes"));
 router.use("/admin", require("./adminRoutes"));
 router.use("/professor", require("./professorRoutes"));
+router.use("/class-courses", classCourseRoutes);
+router.use("/classes", classRoutes);
 module.exports = router;
