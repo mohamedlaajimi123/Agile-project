@@ -15,11 +15,8 @@ import ExamPlannerView from '../components/admin/views/ExamPlannerView';
 import GradeControlView from '../components/admin/views/GradeControlView';
 import UserDirectoryView from '../components/admin/views/UserDirectoryView';
 import DocumentCenterView from '../components/admin/views/DocumentCenterView';
-<<<<<<< HEAD
 import ClassListView from '../components/admin/views/ClassListView';
-=======
 import AdminSyncView from '../components/admin/views/AdminSyncView';
->>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
 
 // Profile & Settings Wrappers
 import AdminProfile from '../components/admin/AdminProfile';
@@ -115,11 +112,9 @@ export default function AdminPortal() {
           
           {activeView === 'documents' && <DocumentCenterView key="documents" isDark={isDark} t={t} />}
 
-<<<<<<< HEAD
           {activeView === 'class-list' && <ClassListView key="class-list" isDark={isDark} t={t} />}
-=======
+
           {activeView === 'sync' && <AdminSyncView key="sync" isDark={isDark} t={t} />}
->>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
 
           {/* FULL SCREEN VIEWS */}
           {activeView === 'profile' && (

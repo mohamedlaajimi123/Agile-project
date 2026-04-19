@@ -5,11 +5,8 @@ export const LABELS = {
     userDirectory: 'User Directory',
     gradeControl: 'Grade Control',
     documents: 'Document Center',
-<<<<<<< HEAD
     classGPA: 'Class GPA',
-=======
     sync: 'Data Sync',
->>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
     administration: 'Administration',
     systemOverview: 'System overview and management dashboard',
     roomOccupancy: 'Room Occupancy',
@@ -49,11 +46,8 @@ export const LABELS = {
     userDirectory: 'Répertoire d\'Utilisateurs',
     gradeControl: 'Contrôle des Notes',
     documents: 'Centre de Documents',
-<<<<<<< HEAD
     classGPA: 'GPA de Classe',
-=======
     sync: 'Synchronisation des Données',
->>>>>>> 56be6afd1916d87f315e3ec5363ccc5756b2fbdf
     administration: 'Administration',
     systemOverview: 'Aperçu du système et tableau de bord de gestion',
     roomOccupancy: 'Occupation des Salles',
