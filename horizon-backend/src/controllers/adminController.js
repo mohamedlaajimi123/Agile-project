@@ -1,4 +1,6 @@
+// src/controllers/adminController.js
 const pool = require("../config/db");
+const logger = require('../utils/logger');
 
 exports.getDashboard = async (req, res, next) => {
   try {
@@ -32,7 +34,7 @@ exports.triggerSync = async (req, res, next) => {
     // Mock sync operation - in real implementation, perform actual sync
     // Simulate async operation
     setTimeout(() => {
-      console.log("Admin data sync completed");
+      logger.info("Admin data sync completed");
     }, 2000);
 
     res.json({

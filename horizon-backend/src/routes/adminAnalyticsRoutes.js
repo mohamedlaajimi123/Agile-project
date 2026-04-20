@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const db = require("../config/db");
 const { protect, authorize } = require("../middlewares/authMiddleware");
+const logger = require("../utils/logger");
 
 /**
  * @swagger
@@ -17,7 +18,7 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
  *     summary: Get admin analytics
  *     tags: [AdminAnalytics]
  */
-console.log("➡️ Admin analytics endpoint hit");
+logger.info("Admin analytics endpoint hit");
 /*router.get(
     
   "/analytics",
@@ -67,7 +68,7 @@ router.get("/analytics", async (req, res) => {
 });
 */
 router.get("/analytics", (req, res) => {
-  console.log("🔥 NO AUTH TEST");
+  logger.info("Analytics endpoint accessed");
   res.setHeader("Connection", "close");
   return res.status(200).json({
     message: "OK",

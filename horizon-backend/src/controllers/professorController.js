@@ -1,3 +1,6 @@
+// src/controllers/professorController.js
+const logger = require('../utils/logger');
+
 exports.getDashboard = async (req, res) => {
   res.json({
     message: "Professor dashboard coming soon",
@@ -22,7 +25,7 @@ exports.triggerSync = async (req, res, next) => {
     // Mock sync operation - in real implementation, perform actual sync
     // Simulate async operation
     setTimeout(() => {
-      console.log("Professor data sync completed");
+      logger.info("Professor data sync completed");
     }, 1500);
 
     res.json({
