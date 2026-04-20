@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const db = require("../config/db");
 const { protect, authorize } = require("../middlewares/authMiddleware");
+const logger = require("../utils/logger");
 
 /**
  * @swagger
@@ -27,12 +28,11 @@ router.get(
   authorize("student"),
   async (req, res, next) => {
     try {
-      console.log("➡️ Dashboard request received");
+      logger.debug("Dashboard request received", { userId: req.user?.id });
 
       // 🔥 IMPORTANT FIX (your token uses user_id, not id)
       const userId = req.user.id;
-      console.log("User ID:", userId);
-      console.log("USER OBJECT:", req.user);
+      logger.debug("Processing dashboard for user", { userId, user: req.user });
 
       // 🔹 1. Get student
       const studentRes = await db.query(
@@ -50,7 +50,7 @@ router.get(
       }
 
       const student = studentRes.rows[0];
-      console.log("Student:", student);
+      logger.debug("Student data retrieved", { student });
 
       // 🔹 2. Get classes
       const classRes = await db.query(
@@ -61,7 +61,7 @@ router.get(
         [student.student_id]
       );
 
-      console.log("Classes:", classRes.rows);
+      logger.debug("Classes retrieved", { classes: classRes.rows });
 
       // 🔹 3. Get courses
       const coursesRes = await db.query(
@@ -73,7 +73,7 @@ router.get(
         [student.student_id]
       );
 
-      console.log("Courses:", coursesRes.rows);
+      logger.debug("Courses retrieved", { courses: coursesRes.rows });
 
       // 🔹 4. Get grades (with exams + course)
       const gradesRes = await db.query(
@@ -85,9 +85,7 @@ router.get(
         [student.student_id]
       );
 
-      console.log("Grades:", gradesRes.rows);
-      console.log("User ID:", req.user.user_id);
-      console.log("USER OBJECT:", req.user);
+      logger.debug("Grades retrieved", { grades: gradesRes.rows, userId: req.user.user_id, user: req.user });
       // ✅ Final response
       res.json({
         student,
@@ -97,7 +95,7 @@ router.get(
       });
 
     } catch (err) {
-      console.error("❌ Dashboard error:", err);
+      logger.error("Dashboard error", { error: err.message, stack: err.stack, userId: req.user?.id });
       next(err);
     }
   }

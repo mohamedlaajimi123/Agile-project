@@ -28,9 +28,11 @@ exports.protect = (req, res, next) => {
 };
 
 // 🔒 Authorize
+const logger = require('../utils/logger');
+
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    console.log("User role:", req.user?.role);
+    logger.debug("User role check", { role: req.user?.role, allowedRoles: roles });
 
     if (!req.user) {
       return res.status(401).json({
