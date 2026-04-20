@@ -10,12 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Use v4 for better compatibility
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20' # v4 handles the environment transitions much better
       
       - name: Build Frontend
         run: |
