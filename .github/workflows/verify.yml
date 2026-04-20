@@ -1,30 +1,30 @@
-name: Verify Project
+name: Verify
 
-on: 
+on:
   push:
-    branches: [ main, data-sync-view ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
+
     steps:
-      # Use v4 for better compatibility
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # v4 handles the environment transitions much better
-      
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm install
-          npm run build
-          
-      - name: Install Backend Dependencies
-        run: |
-          cd horizon-backend
-          npm install
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Build frontend
+      working-directory: ./frontend
+      run: |
+        npm install
+        npm run build
+
+    - name: Install horizon-backend dependencies
+      working-directory: ./horizon-backend
+      run: npm install
