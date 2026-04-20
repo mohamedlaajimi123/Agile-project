@@ -19,3 +19,8 @@
 1. **Branch:** Always use `feat/` or `fix/` branches.
 2. **Pull Requests:** Open a PR to `main`.
 3. **Review:** All changes must be approved.
+
+## Security & Hardening
+- **Security Headers:** Implemented via `helmet`.
+- **Rate Limiting:** Global rate limiting active (100 req/15min).
+- **Input Validation:** All user inputs are validated against Joi schemas.

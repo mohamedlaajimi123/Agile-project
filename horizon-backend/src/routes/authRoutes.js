@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const authController = require("../controllers/authController");
 const { protect } = require("../middlewares/authMiddleware");
+const validateRequest = require("../middlewares/validateRequest");
+const { loginSchema } = require("../schemas/authSchemas");
 
 /**
  * @swagger
@@ -19,17 +21,21 @@ const { protect } = require("../middlewares/authMiddleware");
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *                 example: admin@test.com
  *               password:
  *                 type: string
+ *                 minLength: 6
  *                 example: 123456
  *     responses:
  *       200:
  *         description: Successful authentication
+ *       400:
+ *         description: Validation error
  *       401:
  *         description: Invalid credentials
  */
-router.post("/login", authController.login);
+router.post("/login", validateRequest(loginSchema), authController.login);
 
 // ✅ FIXED LINE
 router.get("/me", protect, authController.getMe);
