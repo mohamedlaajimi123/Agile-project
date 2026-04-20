@@ -1,0 +1,28 @@
+name: Verify Project
+on: 
+  push:
+    branches: [ main, data-sync-view ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          
+      - name: Install Backend
+        run: |
+          cd horizon-backend
+          npm install
