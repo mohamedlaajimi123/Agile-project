@@ -4,6 +4,20 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
 
 /**
  * @swagger
+ * /students/dashboard:
+ *   get:
+ *     summary: Get student dashboard
+ *     tags: [Students]
+ */
+router.get(
+  "/dashboard",
+  protect,
+  authorize("student"),
+  studentController.getDashboard
+);
+
+/**
+ * @swagger
  * /students:
  *   get:
  *     summary: Get all students

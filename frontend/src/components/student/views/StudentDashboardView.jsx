@@ -1,50 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { fetchWithAuth } from "../../../api/api";
+import { useEffect, useState } from "react";
 
-export default function StudentDashboardView({ isDark, t }) {
+function StudentDashboardView() {
   const [student, setStudent] = useState(null);
-  const [error, setError] = useState(null);
 
-  // 🔌 Fetch real backend data
   useEffect(() => {
-  const loadDashboard = async () => {
-    try {
-      const data = await fetchWithAuth("/student/dashboard");
-      setStudent(data);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    const token = localStorage.getItem("token");
 
-  loadDashboard();
-}, []);
-  // ✅ Real UI with backend data
+    fetch("http://localhost:5000/api/student/dashboard", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log("STUDENT DATA:", data);
+        setStudent(data);
+      })
+      .catch(err => console.error(err));
+  }, []);
+
+  // 🔥 prevent crash
+  if (!student) {
+    return <p>Loading student dashboard...</p>;
+  }
+
   return (
-    <div className="space-y-6 p-6">
-
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">
-          🎓 Welcome {student.full_name}
-        </h1>
-        <p className="text-gray-400">
-          Student Dashboard
-        </p>
-      </div>
-
-      {/* Info Card */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">
-        <p><strong>Email:</strong> {student.email}</p>
-        <p><strong>Student Code:</strong> {student.student_code}</p>
-      </div>
-
-      {/* Placeholder for future sections */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-        <p className="text-sm text-gray-400">
-          🚀 Your exams, grades, and schedule will appear here soon.
-        </p>
-      </div>
-
+    <div>
+      <h1>{student?.full_name || "Student Dashboard"}</h1>
     </div>
   );
 }
+
+export default StudentDashboardView;

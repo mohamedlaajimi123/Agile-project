@@ -5,8 +5,17 @@ const AuthContext = createContext(undefined);
 // 1. Define the Provider
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('horizon_user');
+    // Try to load user from localStorage on mount
+    const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('token') || null;
+  });
+
+  const [role, setRole] = useState(() => {
+    return localStorage.getItem('role') || null;
   });
 
   const [isDark, setIsDark] = useState(() => {
@@ -34,15 +43,27 @@ export function AuthProvider({ children }) {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const login = (userData) => {
+  // Backend-compatible login handler
+  const login = (userData, authToken) => {
     setUser(userData);
-    localStorage.setItem('horizon_user', JSON.stringify(userData));
-    showToast(`Welcome, ${userData.name}!`);
+    setToken(authToken);
+    setRole(userData.role);
+    
+    // Store in localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', authToken);
+    localStorage.setItem('role', userData.role);
+    
+    showToast(`Welcome, ${userData.full_name}!`);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('horizon_user');
+    setToken(null);
+    setRole(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
     showToast("Logged out successfully", "info");
   };
 
@@ -50,6 +71,8 @@ export function AuthProvider({ children }) {
   // Vite often triggers reloads if it thinks the "value" object is unstable.
   const contextValue = useMemo(() => ({
     user,
+    token,
+    role,
     isDark,
     toggleTheme,
     language,
@@ -58,11 +81,11 @@ export function AuthProvider({ children }) {
     logout,
     toast,
     showToast,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isProfessor: user?.role === 'professor',
-    isStudent: user?.role === 'student'
-  }), [user, isDark, language, toast]);
+    isAuthenticated: !!token && !!user,
+    isAdmin: role === 'admin',
+    isProfessor: role === 'professor',
+    isStudent: role === 'student'
+  }), [user, token, role, isDark, language, toast]);
 
   return (
     <AuthContext.Provider value={contextValue}>

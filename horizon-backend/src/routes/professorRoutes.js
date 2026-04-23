@@ -15,7 +15,12 @@ router.get(
   authorize("professor"),
   professorController.getDashboard
 );
-
+router.get(
+  "/my-courses",
+  protect,
+  authorize("professor"),
+  professorController.getMyCourses
+);
 router.get("/sync", protect, authorize("professor"), professorController.getSyncStatus);
 router.post("/sync", protect, authorize("professor"), professorController.triggerSync);
 

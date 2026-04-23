@@ -1,6 +1,50 @@
 // src/controllers/studentController.js
 
 const studentModel = require("../models/studentModel");
+const pool = require("../config/db");
+
+// Get student dashboard
+exports.getDashboard = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // Get student info
+    const studentResult = await pool.query(
+      `SELECT s.*, u.full_name, u.email
+       FROM students s
+       JOIN users u ON s.user_id = u.user_id
+       WHERE s.user_id = $1`,
+      [userId]
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({
+        error: "Student profile not found",
+      });
+    }
+
+    const student = studentResult.rows[0];
+
+    // Get enrolled courses count
+    const coursesResult = await pool.query(
+      `SELECT COUNT(*) FROM student_classes WHERE student_id = $1`,
+      [student.student_id]
+    );
+
+    res.json({
+      message: "Student dashboard loaded successfully",
+      student: {
+        id: student.user_id,
+        name: student.full_name,
+        email: student.email,
+        studentCode: student.student_code,
+      },
+      enrolledCourses: parseInt(coursesResult.rows[0].count),
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // Create student
 exports.createStudent = async (req, res, next) => {
@@ -57,5 +101,3 @@ exports.getMyProfile = async (req, res, next) => {
     next(err);
   }
 };
-
-

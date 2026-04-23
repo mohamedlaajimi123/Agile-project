@@ -1,8 +1,8 @@
+require("./config/db");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-
 const routes = require("./routes");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const { swaggerUi, specs } = require("./docs/swagger");

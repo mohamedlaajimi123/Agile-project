@@ -6,6 +6,15 @@ exports.getDashboard = async (req, res) => {
     message: "Professor dashboard coming soon",
   });
 };
+exports.getMyCourses = async (req, res) => {
+  try {
+    res.json({
+      message: "My courses endpoint working",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 exports.getSyncStatus = async (req, res, next) => {
   try {

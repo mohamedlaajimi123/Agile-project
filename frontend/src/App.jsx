@@ -1,37 +1,66 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-
 // Components
 import Toast from './components/common/Toast';
 import ProtectedRoute from './components/common/ProtectedRoute'; 
 
 // Pages
 import HorizonLogin from './pages/Login/HorizonLogin'; 
-import StudentPortal from './pages/StudentPortal';
-import ProfessorPortal from './pages/ProfessorPortal';
+import AdminDashboard from './pages/AdminDashboard';
+import SuperAdminDashboard from "./components/superadmin/views/SuperAdminDashboard";
+import ProfessorDashboard from './pages/ProfessorDashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import AdminPortal from './pages/AdminPortal';
+import ProfessorPortal from './pages/ProfessorPortal';
+import StudentPortal from './pages/StudentPortal';
 import SuperAdminPortal from './pages/SuperAdminPortal';
 
 export default function App() {
-  const { isAuthenticated, user } = useAuth();
-
   return (
     <Router>
       <Toast />
 
       <Routes>
-        {/* --- CURRENT DEVELOPMENT ROUTES (OPEN ACCESS) --- */}
-        <Route path="/" element={<HorizonLogin />} />
-        <Route path="/student/*" element={<StudentPortal />} />
-        <Route path="/professor/*" element={<ProfessorPortal />} />
-        <Route path="/admin/*" element={<AdminPortal />} />
         
-        {/* FIXED: Correct spelling and added leading slash */}
+        {/* Login Route */}
+        <Route path="/" element={<HorizonLogin />} />
+        <Route path="/login" element={<HorizonLogin />} />
+
+        {/* Protected Dashboard Routes */}
+        <Route 
+          path="/admin/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/professor/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['professor']}>
+              <ProfessorDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/student/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Fallback portal routes (for backwards compatibility) */}
+        <Route path="/admin/*" element={<AdminPortal />} />
+        <Route path="/professor/*" element={<ProfessorPortal />} />
+        <Route path="/student/*" element={<StudentPortal />} />
         <Route path="/superadmin/*" element={<SuperAdminPortal />} />
         
-        {/* FIXED: Fallback MUST be the very last route */}
+        {/* Fallback: redirect unknown routes to login */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
       </Routes>
     </Router>
   );
