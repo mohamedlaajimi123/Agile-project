@@ -134,7 +134,7 @@ export default function SuperAdminPortal() {
   }
 
   return (
-    <div className={`min-h-screen overflow-hidden transition-colors duration-500 ${
+    <div className={`min-h-screen transition-colors duration-500 ${
       isDark
         ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white'
         : 'bg-gradient-to-br from-zinc-50 via-white to-zinc-100 text-zinc-900'
@@ -196,9 +196,10 @@ export default function SuperAdminPortal() {
         </motion.div>
 
         <AnimatePresence mode="wait">
-          {activeView === 'sync' && <DataSyncView isDark={isDark} t={t} />}
+          {activeView === 'sync' && <DataSyncView key="sync" isDark={isDark} t={t} />}
           {activeView === 'audit' && (
             <AuditLogView
+              key="audit"
               isDark={isDark}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -206,7 +207,7 @@ export default function SuperAdminPortal() {
               t={t}
             />
           )}
-          {activeView === 'config' && <ConfigView isDark={isDark} t={t} />}
+          {activeView === 'config' && <ConfigView key="config" isDark={isDark} t={t} />}
         </AnimatePresence>
       </main>
 

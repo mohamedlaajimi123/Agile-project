@@ -6,10 +6,6 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Pages
 import HorizonLogin from './pages/Login/HorizonLogin'; 
-import AdminDashboard from './pages/AdminDashboard';
-import SuperAdminDashboard from "./components/superadmin/views/SuperAdminDashboard";
-import ProfessorDashboard from './pages/ProfessorDashboard';
-import StudentDashboard from './pages/StudentDashboard';
 import AdminPortal from './pages/AdminPortal';
 import ProfessorPortal from './pages/ProfessorPortal';
 import StudentPortal from './pages/StudentPortal';
@@ -31,7 +27,7 @@ export default function App() {
           path="/admin/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
+              <AdminPortal />
             </ProtectedRoute>
           } 
         />
@@ -39,7 +35,7 @@ export default function App() {
           path="/professor/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['professor']}>
-              <ProfessorDashboard />
+              <ProfessorPortal />
             </ProtectedRoute>
           } 
         />
@@ -47,7 +43,7 @@ export default function App() {
           path="/student/dashboard" 
           element={
             <ProtectedRoute allowedRoles={['student']}>
-              <StudentDashboard />
+              <StudentPortal />
             </ProtectedRoute>
           } 
         />
@@ -60,7 +56,7 @@ export default function App() {
         
         {/* Fallback: redirect unknown routes to login */}
         <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+        <Route path="/superadmin/dashboard" element={<SuperAdminPortal />} />
       </Routes>
     </Router>
   );
