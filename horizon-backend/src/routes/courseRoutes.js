@@ -17,13 +17,6 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
  *     tags: [Courses]
  *     security:
  *       - bearerAuth: []
- */
-/**
- * @swagger
- * /courses:
- *   get:
- *     summary: Get all courses
- *     tags: [Courses]
  *     responses:
  *       200:
  *         description: List of courses
@@ -33,6 +26,12 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Course'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get("/", protect, async (req, res, next) => {
   try {
@@ -76,6 +75,19 @@ router.get("/", protect, async (req, res, next) => {
  *               description:
  *                 type: string
  *                 example: Intro to databases
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Course'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
  */
 router.post("/", protect, authorize("admin"), async (req, res, next) => {
   try {

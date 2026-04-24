@@ -6,8 +6,19 @@ const { protect, authorize } = require("../middlewares/authMiddleware");
  * @swagger
  * /professor/dashboard:
  *   get:
- *     summary: Get professor dashboard
+ *     summary: Get professor dashboard data.
  *     tags: [Professor]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Professor dashboard data returned successfully.
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get(
   "/dashboard",

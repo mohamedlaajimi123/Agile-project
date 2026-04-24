@@ -20,7 +20,13 @@ const logger = require("../utils/logger");
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Dashboard data
+ *         description: Dashboard data returned successfully.
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         $ref: '#/components/responses/ServerError'
  */
 router.get(
   "/dashboard",
