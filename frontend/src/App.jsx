@@ -49,14 +49,41 @@ export default function App() {
         />
 
         {/* Fallback portal routes (for backwards compatibility) */}
-        <Route path="/admin/*" element={<AdminPortal />} />
-        <Route path="/professor/*" element={<ProfessorPortal />} />
-        <Route path="/student/*" element={<StudentPortal />} />
-        <Route path="/superadmin/*" element={<SuperAdminPortal />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminPortal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/professor/*"
+          element={
+            <ProtectedRoute allowedRoles={['professor']}>
+              <ProfessorPortal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/*"
+          element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <StudentPortal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/superadmin/*"
+          element={
+            <ProtectedRoute allowedRoles={['superadmin']}>
+              <SuperAdminPortal />
+            </ProtectedRoute>
+          }
+        />
         
         {/* Fallback: redirect unknown routes to login */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="/superadmin/dashboard" element={<SuperAdminPortal />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

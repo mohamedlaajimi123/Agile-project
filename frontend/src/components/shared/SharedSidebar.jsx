@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, ChevronDown, User, Settings, LogOut, Globe, ChevronUp } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SharedSidebar({ 
   isDark, setIsDark, 
@@ -14,6 +16,8 @@ export default function SharedSidebar({
   onProfileClick,
   onSettingsClick 
 }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
@@ -206,9 +210,9 @@ export default function SharedSidebar({
                 {/* Logout Link */}
                 <button 
                   onClick={() => {
-                    // BACKEND NOTE: Teammate should clear localStorage/SessionStorage 
-                    // and redirect to the login page here.
-                    console.log("Logging out...");
+                    console.log("Logout triggered");
+                    logout();
+                    navigate('/login');
                   }}
                   className={`w-full text-left px-4 py-3 flex items-center gap-3 transition-colors border-t ${
                   isDark ? 'border-white/10 hover:bg-red-500/10 text-red-400' : 'border-indigo-100 hover:bg-red-50 text-red-600'

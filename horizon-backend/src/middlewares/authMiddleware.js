@@ -1,51 +1,47 @@
 const jwt = require("jsonwebtoken");
+const logger = require("../utils/logger");
 
-// 🔐 Protect
+// 🔐 Protect middleware
 exports.protect = (req, res, next) => {
   try {
-    let token;
-
-    if (req.headers.authorization?.startsWith("Bearer")) {
-      token = req.headers.authorization.split(" ")[1];
-    }
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
 
     if (!token) {
-      return res.status(401).json({
-        error: "Not authorized, token missing",
-      });
+      return res.status(401).json({ error: "Not authorized, token missing" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      logger.error("JWT_SECRET is not configured");
+      return res.status(500).json({ error: "Server misconfiguration" });
+    }
+
+    const decoded = jwt.verify(token, secret);
 
     req.user = decoded;
-
-    return next(); // ✅ ALWAYS return next
+    return next();
   } catch (err) {
-    return res.status(401).json({
-      error: "Not authorized, invalid token",
-    });
+    logger.warn("JWT verification failed", { message: err.message });
+    return res.status(401).json({ error: "Not authorized, invalid token" });
   }
 };
 
-// 🔒 Authorize
-const logger = require('../utils/logger');
-
+// 🔒 Authorize middleware
 exports.authorize = (...roles) => {
   return (req, res, next) => {
     logger.debug("User role check", { role: req.user?.role, allowedRoles: roles });
 
     if (!req.user) {
-      return res.status(401).json({
-        error: "No user found",
-      });
+      return res.status(401).json({ error: "Not authorized" });
     }
 
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        error: "Forbidden: not allowed",
-      });
+      return res.status(403).json({ error: "Forbidden: not allowed" });
     }
 
-    return next(); // 🔥 VERY IMPORTANT
+    return next();
   };
 };
