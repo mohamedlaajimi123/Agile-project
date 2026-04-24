@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const professorController = require("../controllers/professorController");
 const { protect, authorize } = require("../middlewares/authMiddleware");
+const { audit } = require("../middlewares/auditMiddleware");
 
 /**
  * @swagger
@@ -24,6 +25,7 @@ router.get(
   "/dashboard",
   protect,
   authorize("professor"),
+  audit("VIEW_PROFESSOR_DASHBOARD", "dashboard"),
   professorController.getDashboard
 );
 router.get(

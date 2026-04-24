@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const db = require("../config/db");
 const { protect, authorize } = require("../middlewares/authMiddleware");
+const { audit } = require("../middlewares/auditMiddleware");
 const logger = require("../utils/logger");
 
 /**
@@ -32,6 +33,7 @@ router.get(
   "/dashboard",
   protect,
   authorize("student"),
+  audit("VIEW_STUDENT_DASHBOARD", "dashboard"),
   async (req, res, next) => {
     try {
       logger.debug("Dashboard request received", { userId: req.user?.id });
