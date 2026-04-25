@@ -1,220 +1,221 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Loader } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext';
-
-// Logo
-import horizonLogo from '../../assets/horizon-logo.png';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import supabase from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
+import horizonLogo from "../../assets/horizon-logo.png";
 
 export default function LoginForm({ onForgotPassword }) {
   const navigate = useNavigate();
-  const { login, showToast } = useAuth();
+  const { login } = useAuth();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // ✅ BACKEND LOGIN WITH ROLE-BASED REDIRECT
-const handleSignIn = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  setErrorMessage('');
+  useEffect(() => {
+    const restoreOAuthSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.warn("Supabase session restore failed:", error);
+        return;
+      }
 
-  try {
-    const res = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+      const session = data?.session;
+      const user = session?.user;
+      if (!user) return;
 
-    const data = await res.json();
-    console.log("LOGIN DATA:", data);
+      try {
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", user.email)
+          .single();
 
-    if (!res.ok) {
-      throw new Error(data.error || 'Login failed');
+        if (profileError) throw profileError;
+        if (!profile?.role) throw new Error("User role not found");
+
+        const role = profile.role?.toLowerCase().trim();
+        const authUser = { ...user, role };
+
+        login(authUser, session.access_token);
+        localStorage.setItem("session", JSON.stringify(session));
+        navigate(`/${role}/dashboard`);
+      } catch (err) {
+        console.warn("OAuth redirect restore failed:", err);
+      }
+    };
+
+    restoreOAuthSession();
+  }, [login, navigate]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage("");
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      if (!data?.user) throw new Error("Authentication failed.");
+
+      const user = data.user;
+      const { data: profile, error: profileError } = await supabase
+        .from("users")
+        .select("role")
+        .eq("email", user.email)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profile?.role) throw new Error("User role not found");
+
+      const role = profile.role?.toLowerCase().trim();
+      const authUser = { ...user, role };
+
+      login(authUser, data.session?.access_token || null);
+      localStorage.setItem("session", JSON.stringify(data.session || null));
+      localStorage.setItem("rememberMe", rememberMe ? "true" : "false");
+
+      switch (role) {
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+        case "professor":
+          navigate("/professor/dashboard");
+          break;
+        case "student":
+          navigate("/student/dashboard");
+          break;
+        case "superadmin":
+          navigate("/superadmin/dashboard");
+          break;
+        default:
+          throw new Error("Invalid role");
+      }
+    } catch (err) {
+      setErrorMessage(err.message || "Unable to login.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // ✅ Save auth
-    login(data.user, data.token);
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setErrorMessage("");
 
-    const role = data.role || data.user?.role;
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/login`,
+        },
+      });
 
-    // ✅ Redirect
-    if (role === 'admin') {
-      navigate('/admin/dashboard');
-    } else if (role === 'professor') {
-      navigate('/professor/dashboard');
-    } else if (role === 'student') {
-      navigate('/student/dashboard');
-    } else if (role === 'superadmin') {
-      navigate('/superadmin/dashboard'); // 🔥 FIX
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      setErrorMessage(err.message || "Google sign-in failed.");
+      setLoading(false);
     }
-
-  } catch (err) {
-    const errorMsg = err.message || 'Invalid credentials';
-    setErrorMessage(errorMsg);
-    showToast(errorMsg, 'error');
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
-    <motion.div
-      key="login"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4 }}
-      className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8 space-y-6"
-    >
-      {/* Header */}
-      <div className="text-center space-y-3">
-        <div className="flex items-center justify-center mb-6">
-          <img
-            src={horizonLogo}
-            alt="Horizon School of Digital Technologies"
-            className="h-12 w-auto drop-shadow-md"
-          />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#020617] via-[#0a1a3a] to-[#020617]">
+      <div className="w-full max-w-md bg-[#0f172a]/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-white/10">
+
+        {/* LOGO */}
+        <div className="flex justify-center mb-6">
+          <img src={horizonLogo} alt="Horizon Logo" className="h-12" />
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
+
+        {/* TITLE */}
+        <h2 className="text-2xl font-bold text-center text-white">
           Welcome Back
-        </h1>
-        <p className="text-gray-400 text-sm">
+        </h2>
+        <p className="text-center text-gray-400 text-sm mb-6">
           Sign in to your Horizon account
         </p>
-      </div>
 
-      {/* Error Message */}
-      {errorMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"
-        >
-          {errorMessage}
-        </motion.div>
-      )}
-
-      {/* Form */}
-      <form onSubmit={handleSignIn} className="space-y-4">
-
-        {/* Email */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-300">
-            Email Address
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-500 pointer-events-none" />
-            <input
-              type="email"
-              placeholder="name@horizon.tn"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all duration-200"
-            />
+        {/* ERROR */}
+        {errorMessage && (
+          <div className="bg-red-500/20 text-red-400 text-sm p-2 rounded mb-4 text-center">
+            {errorMessage}
           </div>
-        </div>
+        )}
 
-        {/* Password */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-300">
-            Password
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-500 pointer-events-none" />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full pl-10 pr-12 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/50 transition-all duration-200"
-            />
+        {/* FORM */}
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full px-4 py-3 rounded-full bg-gray-200 text-black outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-3 rounded-full bg-gray-200 text-black outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <div className="flex justify-between text-sm text-gray-400">
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 bg-white text-indigo-600 focus:ring-indigo-500"
+              />
+              Remember me
+            </label>
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-500 hover:text-gray-400 transition-colors"
+              onClick={onForgotPassword}
+              className="text-blue-400 hover:underline"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              Forgot password?
             </button>
           </div>
-        </div>
-
-        {/* Options */}
-        <div className="flex items-center justify-between pt-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-white/20 bg-white/5 cursor-pointer accent-indigo-500"
-            />
-            <span className="text-sm text-gray-400">Remember me</span>
-          </label>
 
           <button
-            type="button"
-            onClick={onForgotPassword}
-            className="text-sm text-indigo-400 hover:text-indigo-300 font-medium"
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold hover:opacity-90 transition"
           >
-            Forgot password?
+            {loading ? "Signing in..." : "Sign In"}
           </button>
-        </div>
+        </form>
 
-        {/* Submit */}
-        <motion.button
-          type="submit"
-          disabled={isLoading}
-          whileHover={{ scale: isLoading ? 1 : 1.02 }}
-          whileTap={{ scale: isLoading ? 1 : 0.98 }}
-          className="w-full py-2.5 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-semibold hover:shadow-lg hover:shadow-indigo-500/50 disabled:opacity-70 transition-all duration-200 flex items-center justify-center gap-2 mt-6"
-        >
-          {isLoading ? (
-            <>
-              <Loader className="w-4 h-4 animate-spin" />
-              Signing in...
-            </>
-          ) : (
-            'Sign In'
-          )}
-        </motion.button>
-      </form>
-
-      {/* Divider */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-[#0f172a] text-gray-400">
-            Or continue with
+        {/* DIVIDER */}
+        <div className="flex items-center my-6">
+          <div className="flex-grow h-px bg-gray-600"></div>
+          <span className="px-3 text-gray-400 text-sm">
+            OR CONTINUE WITH
           </span>
+          <div className="flex-grow h-px bg-gray-600"></div>
         </div>
-      </div>
 
-      {/* Google button (UI only) */}
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full py-2.5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold flex items-center justify-center gap-3"
-      >
-        Sign in with Google
-      </motion.button>
-
-      <p className="text-center text-xs text-gray-500">
-        Don't have an account?{" "}
-        <button className="text-indigo-400 font-semibold">
-          Contact IT Support
+        {/* GOOGLE BUTTON */}
+        <button
+          onClick={handleGoogleLogin}
+          className="w-full py-3 rounded-full bg-black text-white flex items-center justify-center gap-2 hover:bg-gray-800 transition"
+        >
+          <span className="bg-white text-black rounded-full px-2">G</span>
+          Continue with Google
         </button>
-      </p>
-    </motion.div>
+      </div>
+    </div>
   );
 }

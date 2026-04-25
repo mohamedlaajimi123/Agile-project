@@ -27,14 +27,15 @@ export default function SharedSidebar({
   ];
 
   return (
-    <aside className={`fixed left-0 top-0 z-30 h-screen w-64 border-r backdrop-blur-xl p-6 flex flex-col transition-all duration-300 ${
+    <aside className={`fixed left-0 top-0 z-30 h-screen w-64 border-r backdrop-blur-xl p-6 flex flex-col justify-between transition-all duration-300 ${
       isDark 
         ? 'border-white/10 bg-white/5' 
         : 'border-indigo-200 bg-white/40 shadow-lg'
     }`}>
       
-      {/* --- LOGO SECTION --- */}
-      <div className="mb-12 flex justify-start">
+      <div>
+        {/* --- LOGO SECTION --- */}
+        <div className="mb-12 flex justify-start">
         <motion.button 
           // BACKEND NOTE: Teammate should ensure navItems[0].id is always the default landing tab
           onClick={() => setActiveView(navItems[0]?.id)}
@@ -84,8 +85,42 @@ export default function SharedSidebar({
         })}
       </nav>
 
+      <div className="mt-8 space-y-3 rounded-3xl border border-white/10 bg-white/5 p-3">
+        <button
+          onClick={() => {
+            if (onProfileClick) onProfileClick();
+            setShowProfileMenu(false);
+          }}
+          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-slate-100 transition hover:bg-white/10"
+        >
+          <User className="w-4 h-4 text-indigo-400" />
+          Profile
+        </button>
+        <button
+          onClick={() => {
+            if (onSettingsClick) onSettingsClick();
+            setShowProfileMenu(false);
+          }}
+          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-slate-100 transition hover:bg-white/10"
+        >
+          <Settings className="w-4 h-4 text-violet-400" />
+          Settings
+        </button>
+        <button
+          onClick={async () => {
+            await logout();
+            navigate('/login');
+          }}
+          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-red-400 transition hover:bg-red-500/10"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
+      </div>
+      </div>
+
       {/* --- FOOTER CONTROLS --- */}
-      <div className="space-y-4 pt-4 border-t" style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
+      <div className="mt-auto space-y-4 pt-4 border-t" style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
         
         {/* Language Selector */}
         <div className="relative z-50">

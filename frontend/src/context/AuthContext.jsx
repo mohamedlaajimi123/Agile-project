@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import supabase from '../lib/supabase';
 
 const AuthContext = createContext(undefined);
 
@@ -49,21 +50,34 @@ export function AuthProvider({ children }) {
     setToken(authToken);
     setRole(userData.role);
     
-    // Store in localStorage
     localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', authToken);
-    localStorage.setItem('role', userData.role);
+    if (authToken) {
+      localStorage.setItem('token', authToken);
+    } else {
+      localStorage.removeItem('token');
+    }
+    if (userData.role) {
+      localStorage.setItem('role', userData.role);
+    }
     
     showToast(`Welcome, ${userData.full_name}!`);
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
     setToken(null);
     setRole(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('session');
+
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('Supabase sign out failed:', err);
+    }
+
     showToast("Logged out successfully", "info");
   };
 
