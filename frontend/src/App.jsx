@@ -5,6 +5,7 @@ import Toast from './components/common/Toast';
 import ProtectedRoute from './components/common/ProtectedRoute'; 
 
 // Pages
+import Homepage from './pages/Home/Homepage';
 import HorizonLogin from './pages/Login/HorizonLogin'; 
 import AdminPortal from './pages/AdminPortal';
 import ProfessorPortal from './pages/ProfessorPortal';
@@ -18,8 +19,8 @@ export default function App() {
 
       <Routes>
         
-        {/* Login Route */}
-        <Route path="/" element={<HorizonLogin />} />
+        {/* Homepage Route */}
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<HorizonLogin />} />
 
         {/* Protected Dashboard Routes */}
