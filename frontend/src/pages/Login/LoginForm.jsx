@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import supabase from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import horizonLogo from "../../assets/horizon-logo.png";
+import supabase from "../../lib/supabase";
 
 export default function LoginForm({ onForgotPassword }) {
   const navigate = useNavigate();
