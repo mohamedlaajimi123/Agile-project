@@ -13,7 +13,11 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr]">
           <div>
-            <p className="text-xl font-semibold text-white">HorizonExam</p>
+            <img
+              src="/logo.png"
+              alt="HorizonExam Logo"
+              className="mb-4 h-8 w-auto object-contain"
+            />
             <p className="mt-4 max-w-md text-sm leading-7 text-slate-300">
               A modern exam management system designed for academic institutions that require secure, compliant, and intelligent campus operations.
             </p>

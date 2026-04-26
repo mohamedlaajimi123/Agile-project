@@ -34,8 +34,12 @@ export default function Navbar({ isDark, toggleDark }) {
       isScrolled ? 'bg-white/95 dark:bg-slate-900/95 shadow-sm backdrop-blur-xl' : 'bg-transparent'
     }`}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="#top" className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          HorizonExam
+        <a href="#top" className="inline-flex flex-shrink-0 items-center">
+          <img
+            src="/logo.png"
+            alt="HorizonExam Logo"
+            className="h-10 w-auto object-contain"
+          />
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">
