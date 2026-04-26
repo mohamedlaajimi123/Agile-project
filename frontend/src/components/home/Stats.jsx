@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Award, BookOpen, Clock, ShieldCheck } from 'lucide-react';
 
 const stats = [
-  { label: 'Students', value: 1000, suffix: '+' },
-  { label: 'Exams Managed', value: 120, suffix: '+' },
-  { label: 'Professors', value: 50, suffix: '+' },
-  { label: 'Scheduling Conflicts', value: 0, suffix: '%' },
+  { label: 'Students', value: 1000, suffix: '+', icon: BookOpen, color: 'text-indigo-400' },
+  { label: 'Exams Managed', value: 120, suffix: '+', icon: Clock, color: 'text-violet-400' },
+  { label: 'Professors', value: 50, suffix: '+', icon: Award, color: 'text-pink-400' },
+  { label: 'Scheduling Conflicts', value: 0, suffix: '%', icon: ShieldCheck, color: 'text-emerald-400' },
 ];
 
 export default function Stats() {
@@ -18,12 +19,10 @@ export default function Stats() {
 
     const interval = window.setInterval(() => {
       frame += 1;
-      setCounts((current) =>
-        current.map((value, index) => {
-          const target = stats[index].value;
+      setCounts(() =>
+        stats.map((item) => {
           const divisor = totalFrames - frame + 1;
-          const nextValue = Math.min(target, Math.round(target - target / divisor));
-          return nextValue;
+          return Math.min(item.value, Math.round(item.value - item.value / divisor));
         })
       );
 
@@ -37,23 +36,28 @@ export default function Stats() {
   }, []);
 
   return (
-    <section className="bg-white dark:bg-slate-900 py-24 transition-colors duration-300">
+    <section className="py-16 transition-colors duration-500 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, index) => (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-10 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-950"
-            >
-              <dt className="text-3xl font-semibold text-slate-900 dark:text-white">
-                {counts[index]}
-                <span className="text-lg">{stat.suffix}</span>
-              </dt>
-              <dd className="mt-4 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                {stat.label}
-              </dd>
-            </div>
-          ))}
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+
+            return (
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-indigo-200 bg-white/50 p-6 backdrop-blur-xl shadow-lg transition-all hover:-translate-y-1 hover:border-indigo-400/50 dark:border-white/10 dark:bg-white/5"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <p className="text-sm font-medium uppercase tracking-wider text-zinc-500 dark:text-gray-400">{stat.label}</p>
+                  <Icon className={`h-8 w-8 opacity-40 ${stat.color}`} />
+                </div>
+                <p className={`mt-4 text-4xl font-bold ${stat.color}`}>
+                  {counts[index]}
+                  <span className="text-lg">{stat.suffix}</span>
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
