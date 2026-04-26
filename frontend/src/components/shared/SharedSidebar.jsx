@@ -3,16 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, ChevronDown, User, Settings, LogOut, Globe, ChevronUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import horizonLogo from '../../assets/horizon-logo.png';
 
 export default function SharedSidebar({ 
   isDark, setIsDark, 
   language, setLanguage, 
   activeView, setActiveView, 
   t,
-  navItems,      
+  navItems,       
   userProfile,   
   logoSrc,       
-  logoAlt,
+  logoAlt = "Horizon Logo", 
   onProfileClick,
   onSettingsClick 
 }) {
@@ -45,7 +46,7 @@ export default function SharedSidebar({
             <div className={`absolute inset-0 rounded-full blur-xl transition-all duration-500 ${
               isDark ? 'bg-indigo-500/20 group-hover:bg-indigo-500/40' : 'bg-indigo-400/20 group-hover:bg-indigo-400/40'
             }`} />
-            <img src={logoSrc} alt={logoAlt} className="h-10 w-auto relative z-10 drop-shadow-lg" />
+            <img src={logoSrc || horizonLogo} alt={logoAlt} className="h-10 w-auto relative z-10 drop-shadow-lg" />
           </motion.button>
         </div>
 
