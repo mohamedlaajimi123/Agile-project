@@ -36,87 +36,53 @@ export default function SharedSidebar({
       <div>
         {/* --- LOGO SECTION --- */}
         <div className="mb-12 flex justify-start">
-        <motion.button 
-          // BACKEND NOTE: Teammate should ensure navItems[0].id is always the default landing tab
-          onClick={() => setActiveView(navItems[0]?.id)}
-          whileHover={{ scale: 1.05 }} 
-          whileTap={{ scale: 0.95 }}
-          className="relative outline-none group flex items-center gap-3"
-        >
-          <div className={`absolute inset-0 rounded-full blur-xl transition-all duration-500 ${
-            isDark ? 'bg-indigo-500/20 group-hover:bg-indigo-500/40' : 'bg-indigo-400/20 group-hover:bg-indigo-400/40'
-          }`} />
-          <img src={logoSrc} alt={logoAlt} className="h-10 w-auto relative z-10 drop-shadow-lg" />
-        </motion.button>
-      </div>
+          <motion.button 
+            onClick={() => setActiveView(navItems[0]?.id)}
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+            className="relative outline-none group flex items-center gap-3"
+          >
+            <div className={`absolute inset-0 rounded-full blur-xl transition-all duration-500 ${
+              isDark ? 'bg-indigo-500/20 group-hover:bg-indigo-500/40' : 'bg-indigo-400/20 group-hover:bg-indigo-400/40'
+            }`} />
+            <img src={logoSrc} alt={logoAlt} className="h-10 w-auto relative z-10 drop-shadow-lg" />
+          </motion.button>
+        </div>
 
-      {/* --- NAVIGATION ITEMS --- */}
-      <nav className="space-y-2 flex-1">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeView === item.id;
-          return (
-            <motion.button
-              key={item.id}
-              onClick={() => setActiveView(item.id)}
-              whileHover={{ x: 4 }}
-              whileTap={{ scale: 0.98 }}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative group ${
-                isActive
-                  ? isDark
-                    ? 'bg-gradient-to-r from-indigo-500/40 to-violet-500/40 border border-indigo-400/30 text-white shadow-lg shadow-indigo-500/20'
-                    : 'bg-gradient-to-r from-indigo-500/30 to-violet-500/30 border border-indigo-300 text-zinc-900 shadow-lg shadow-indigo-400/20'
-                  : isDark
-                    ? 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 border border-transparent'
-              }`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="activeGlow"
-                  className={`absolute inset-0 rounded-lg blur-lg ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-400/20'}`}
-                  initial={false}
-                />
-              )}
-              <Icon className="w-5 h-5 relative z-10" />
-              <span className="text-sm font-medium relative z-10">{item.label}</span>
-            </motion.button>
-          );
-        })}
-      </nav>
-
-      <div className="mt-8 space-y-3 rounded-3xl border border-white/10 bg-white/5 p-3">
-        <button
-          onClick={() => {
-            if (onProfileClick) onProfileClick();
-            setShowProfileMenu(false);
-          }}
-          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-slate-100 transition hover:bg-white/10"
-        >
-          <User className="w-4 h-4 text-indigo-400" />
-          Profile
-        </button>
-        <button
-          onClick={() => {
-            if (onSettingsClick) onSettingsClick();
-            setShowProfileMenu(false);
-          }}
-          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-slate-100 transition hover:bg-white/10"
-        >
-          <Settings className="w-4 h-4 text-violet-400" />
-          Settings
-        </button>
-        <button
-          onClick={async () => {
-            await logout();
-            navigate('/login');
-          }}
-          className="w-full flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-red-400 transition hover:bg-red-500/10"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </button>
-      </div>
+        {/* --- NAVIGATION ITEMS --- */}
+        <nav className="space-y-2 flex-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.id;
+            return (
+              <motion.button
+                key={item.id}
+                onClick={() => setActiveView(item.id)}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative group ${
+                  isActive
+                    ? isDark
+                      ? 'bg-gradient-to-r from-indigo-500/40 to-violet-500/40 border border-indigo-400/30 text-white shadow-lg shadow-indigo-500/20'
+                      : 'bg-gradient-to-r from-indigo-500/30 to-violet-500/30 border border-indigo-300 text-zinc-900 shadow-lg shadow-indigo-400/20'
+                    : isDark
+                      ? 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
+                      : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 border border-transparent'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeGlow"
+                    className={`absolute inset-0 rounded-lg blur-lg ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-400/20'}`}
+                    initial={false}
+                  />
+                )}
+                <Icon className="w-5 h-5 relative z-10" />
+                <span className="text-sm font-medium relative z-10">{item.label}</span>
+              </motion.button>
+            );
+          })}
+        </nav>
       </div>
 
       {/* --- FOOTER CONTROLS --- */}
@@ -152,8 +118,6 @@ export default function SharedSidebar({
                   <button
                     key={lang.code}
                     onClick={() => {
-                      // BACKEND NOTE: Teammate should trigger an API call here 
-                      // to save the user's language preference to the database.
                       setLanguage(lang.code);
                       setIsLangMenuOpen(false);
                     }}
@@ -214,10 +178,8 @@ export default function SharedSidebar({
                   isDark ? 'bg-slate-900/85 border-white/10' : 'bg-white/85 border-indigo-200'
                 }`}
               >
-                {/* Profile Link */}
                 <button 
                   onClick={() => {
-                    // CHANGE: Triggered correctly to open the full-page profile view
                     if (onProfileClick) onProfileClick();
                     setShowProfileMenu(false);
                   }}
@@ -228,10 +190,8 @@ export default function SharedSidebar({
                   <span className="text-sm font-medium">{t.profile}</span>
                 </button>
                 
-                {/* Settings Link */}
                 <button 
                   onClick={() => {
-                    // CHANGE: Triggered correctly to open the full-page blurred settings view
                     if (onSettingsClick) onSettingsClick();
                     setShowProfileMenu(false);
                   }}
@@ -242,10 +202,8 @@ export default function SharedSidebar({
                   <span className="text-sm font-medium">{t.settings}</span>
                 </button>
 
-                {/* Logout Link */}
                 <button 
                   onClick={() => {
-                    console.log("Logout triggered");
                     logout();
                     navigate('/login');
                   }}
