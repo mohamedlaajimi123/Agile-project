@@ -20,12 +20,15 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Build frontend
+    # 1. Build and Test the Frontend
+    - name: Frontend Build & Test
       working-directory: ./frontend
       run: |
         npm install
         npm run build
+        npm test
 
+    # 2. Install/Check Backend
     - name: Install horizon-backend dependencies
       working-directory: ./horizon-backend
       run: npm install
