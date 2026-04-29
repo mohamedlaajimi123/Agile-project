@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import horizonLogo from "../../assets/horizon-logo.png";
 import supabase from "../../lib/supabase";
+import { logDynamicTest } from "../../utils/testHelpers"; // Added for presentation
 
 export default function LoginForm({ onForgotPassword }) {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ export default function LoginForm({ onForgotPassword }) {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      // Dynamic Test Logging
+      logDynamicTest("DT-03", "Manual Login", !error, error ? error.message : "Success");
+      
       if (error) throw error;
 
       const { data: profile, error: profileError } = await supabase
@@ -48,6 +53,10 @@ export default function LoginForm({ onForgotPassword }) {
       provider: "google",
       options: { redirectTo: window.location.origin },
     });
+
+    // Dynamic Test Logging
+    logDynamicTest("DT-01", "Google OAuth", !error, error ? error.message : "Initiated");
+
     if (error) {
       setErrorMessage(error.message);
       setLoading(false);
